@@ -1,0 +1,161 @@
+% once the data m, P and Tout has been decided is time to do the plots
+%%%%% AFTER T_and_P_conv %%%%%%
+
+% pos_decided(1) = R1 ; pos_decided(2) = Tout ; pos_decided(3) = P_tot ;
+% pos_decided(4) = mdot
+% pos_decided = posb(1,:,:,:);
+R2 = 1.5e-4;
+pos_decided = posb(2,:,:,:);
+R1 = pos_decided(1);
+Tout = pos_decided(2);
+P_tot = pos_decided(3);
+mdot = pos_decided(4);
+
+r1 = linspace(R1,eps,10);
+r2 = linspace(R2,R1,10);
+r3 = linspace(Rp,R2,10);
+RRR = [r1(end:-1:1),r2(end:-1:1),r3(end:-1:1)];
+
+
+l = 0.01;
+dx = 0:dp:l;
+
+V_p = 4/3*pi.*Rp.^3; % volume of the particle
+Vf = 4/3.*pi.*R1.^3; % volume of the fuel
+Vol_tot = pi.*(ROUT.^2-(ROUT-l).^2).*0.13; %total vol
+N_p_tot = Vol_tot./V_p.*(1-ep);
+
+ROUT = 0.0435;
+X = ROUT:-dp:ROUT-l; % slices of the cylinder according to the diameter of a particle
+x = 0:dp:l; % i have NOT included the tortuosity here
+xx = dp/2:dp:l-dp/2; % array for the half slices
+
+
+Temp(1) = Tin;
+
+cp_av = (H_cp(Tout)+H_cp(Tin))./2.*1e3;
+
+for i = 2:numel(X)
+    Temp(i) = P_tot./(ele.*mdot.*cp_av.*l).*x(i) + Tin;
+end
+
+xx = dp/2:dp:l-dp/2; % array for the half slices
+for i = 1:numel(xx)
+    TT(i) = P_tot./(ele.*mdot.*cp_av.*l).*xx(i) + Tin;
+end
+
+
+for i = 2:numel(X)
+    % slices dp wide
+    Vol = pi.*(X(i-1).^2-X(i).^2).*0.13; %vol
+    N_p(i-1) = Vol./V_p.*(1-ep) ; % particles in that volume
+    F(i-1) = P_tot./(ele.*N_p(i-1).*4*pi*R1.^2); %flux grows when the volume lowers
+    
+end
+
+h= zeros (1,numel(X)-1);
+Tco = zeros (numel(X)-1,numel(r1));
+Tci = zeros (numel(X)-1,numel(r1));
+Tf = zeros (numel(X)-1,numel(r1));
+T_film= zeros (1,numel(X)-1);
+TTT=zeros (numel(X)-1,numel(r1).*3);
+dh = 1/6*dp.*ep./(1-ep);
+VEL = 0;
+%TT= nonLinspace( 300, Tout ,numel(X)-1, 'log10' );
+%TT = -47.187.*xx.^2 + 2.7339e+05.*xx + 231.6529;
+
+for i = 1:numel(X)-1
+    prantl(i) = (visc(TT(i)).*H_cp(TT(i)).*1e3)./conduc(TT(i));
+    
+    Area = 2.*pi.*(0.087/2-xx(i)) .*0.09; % im taking the area of half of the slice
+    AA(i) = Area; 
+    vel = mdot./(rho(TT(i)).*(Area.*ep)); % cross sectional vel
+    VEL(i) = vel;
+    Re = rho(TT(i)).*vel.*Rp.*2./2.4339e-05;
+    %Re = mdot.*Rp.*2./(visc(TT(i)).*Area.*ep);
+    %Re = rho(TT(i)).*vel.*dh./visc(TT(i));    
+    RE(i) = Re;
+
+    
+    Nu_sp = (2+1.1.*Re.^0.5.*prantl(i).^0.33);
+    %     end
+    NU(i) = Nu_sp;
+    h(i) = (Nu_sp.*conduc(TT(i))./dp);
+    
+    %%%%
+    
+    Nu_l = 0.664.*prantl(i).^(1/3).*(Re./ep).^0.5;
+    Nu_t = 0.037.*(Re./ep).^0.8.*prantl(i)./(1+2.443*(Re./ep).^(-0.1).*(prantl(i).^(2/3)-1)) ;
+    
+    Nu_sp2 = (2 + (Nu_l.^2 + Nu_t.^2).^0.5) ;
+    
+    NU2(i) = Nu_sp2;
+    h2(i) = (Nu_sp2.*conduc(TT(i))./dp);
+    %%%
+    
+    %    T_film(i) = F(i)./(h(i).*N_p(i)) + TT(i);
+    T_film(i) = P_tot./(ele.*N_p_tot.*4*pi*R1.^2.*h2(i)) + TT(i);
+    %%%
+    QQ = P_test./(ele.*N_p_tot); % Q of particle
+    dTCO  =QQ.* (1./(4*pi*k_ZrC).*(1./(1.5e-4)-1./Rp))  ;
+    dTCI = QQ.*(1./(4*pi*k_graph).*(1./R1-1./(1.5e-4))) ;
+    dTF =QQ.* (1./(Vf).*(R1.^2./(6.*k_UC))) ;
+    dTFilm(i) =QQ.* 1./(4*pi.*R1.^2.*h(i)) ;
+    
+    %%%
+    
+    Tco(i,:) = (P_tot/(ele.*N_p_tot))./(4*pi.*k_ZrC).*(-1./Rp +1./r3) + T_film(i);
+    Tci(i,:) = (P_tot/(ele.*N_p_tot))./(4*pi.*k_graph) .*(-1./R2 +1./r2) + Tco(i,end);
+    Tf(i,:) = P_tot/(ele.*Vf.*N_p_tot).*(R1.^2-r1.^2)./(6.*k_UC) + Tci(i,end);
+    
+    TTT(i,:) = [Tf(i,end:-1:1),Tci(i,end:-1:1),Tco(i,end:-1:1)];
+end
+
+% TTT=zeros (numel(X)-1,numel(r1).*3);
+% for i = 1:numel(X)
+%
+%     Area = 2.*pi.*(0.087/2-x(i)) .*0.13; % im taking the area of half of the slice
+%     vel = mdot./(rho(Temp(i)).*(Area.*ep)); % cross sectional vel
+%     Re = rho(Temp(i)).*vel.*dp./visc(Temp(i));
+%     Nu_sp = 2+1.1.*Re.^0.5.*prntl(Temp(i)).^0.33;
+%     h(i) = (Nu_sp.*conduc(Temp(i)))./dp;  % of one particle
+%
+%
+%     T_film(i) = P_tot./(ele.*4*pi*R1.^2.*h(i).*N_p_tot) + Temp(i);
+%
+%     Tco(i,:) = (P_tot/(ele.*N_p_tot))./(4*pi.*k_ZrC).*(-1./Rp +1./r3) + T_film(i);
+%     Tci(i,:) = (P_tot/(ele.*N_p_tot))./(4*pi.*k_graph) .*(-1./R2 +1./r2) + Tco(i,end);
+%     Tf(i,:) = P_tot/(ele.*Vf.*N_p_tot).*(R1.^2-r1.^2)./(6.*k_UC) + Tci(i,end);
+% %
+% %     TTT(i,:) = [Tf(i,end:-1:1),Tci(i,end:-1:1),Tco(i,end:-1:1)];
+% end
+
+%%
+
+% figure(1)
+% hold on; box on; grid on;
+% plot (x,T_film)
+% plot (x,Temp,'.')
+
+figure(1)
+hold on; box on; grid on;
+plot (xx,T_film)
+plot (xx,TT,'.')
+
+
+figure(2)
+
+for i = 1:numel(X)-1
+    hold on; box on; grid on;
+    plot (RRR,TTT(i,:))
+end
+
+%%In a PBR fuel element, the increase in the velocity of the 
+%%coolant with decreasing bed radius is more significant than 
+%%the increase in its viscosity and decrease in its density with 
+%%increasing temperature, thus resulting in an increasing Reynolds 
+%%number with decreasing radius. This increasing value of the Reynolds 
+%%number is reflected in an increasing Nusselt number, which then results 
+%%in an increasing heat transfer coefficient, and a lower film drop.
+
+

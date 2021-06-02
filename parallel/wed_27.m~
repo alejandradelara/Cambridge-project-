@@ -1,0 +1,148 @@
+
+Power = 1e9;
+qddd = 4e10;
+m3 = 25e-3;
+ele = 37;
+hig = 72.94e-2;
+ep = 0.3;
+
+Tin = 300;
+%mdot = 0.6140 ;
+cp = H_cp(Tin).*1e3;
+L = hig;
+
+
+mdot = Power./(ele.*H_cp(300).*1e3.*(400- Tin)) ;
+
+%Rci---Rco--Rm3---Rout
+% Rco = 0.8; % outter radius of the clad moderator= wall
+% Rci = 0.6; % inner radius of the moderator
+% Rm3 = Rco + 2/100 ; % the coolant inlet channel diam (for this modle it is the annular width)
+% Rout = 0.9;
+
+% from paper (1.75 pitch)
+R_fb = (2.975 + 1.976)./2 .*1e-2;
+R_cf = (3.175 + 2.176)./2.*1e-2;
+R_Por = (3.475 + 2.376)./2.*1e-2;
+Rmod_out = 5.21e-2;
+
+% I want the coolant tube diameter to be 0.5e-2 (just to try
+Rcoo_out = Rmod_out - ((Rmod_out-R_Por)./2 -0.25e-2) ;
+Rcoo_in  = Rmod_out - ((Rmod_out-R_Por)./2 +0.25e-2);
+
+type = 'Be';
+k_Al = k_(Tin,'Al');  %%https://www.nist.gov/mml/acmd/1100-aluminum-uns-a91100
+k_Be = k_(Tin,'Be');    % W/K (beryllium as moderator)
+kH   = 0.2;
+mu = 1.5e-5      ; % mu factor for the reynolds number
+
+
+%%
+D_coo = Rcoo_out - Rcoo_in;
+
+Pr = (visc(Tin).*H_cp(Tin).*1e3)./conduc(Tin);
+Re = 4.*mdot./(visc(Tin).*pi.*D_coo);
+Nu = 0.023.*Re.^0.8.*Pr.^0.4; % Pr^n with n= 0.4 because is being heated
+hf = Nu.*conduc(Tin)./D_coo ;
+
+
+%%
+
+%z = 0:0.01:L;
+
+Q = Power./(ele);
+qd = Power./(ele.*L);
+
+%xspan = [0 l];
+zspan = 0:0.01:L;
+
+[z,T_co] = ode45(@(z,t_co) P_test./(L.*ele.*H_cp(t_co).*1e3.*mdot), zspan, Tin);
+%%
+
+%Tcoo = qd./(H_cp(Tin).*1e3.*mdot).*z(i) + Tin;
+
+for i = 1: numel(z)
+    
+    Pr = (visc(T_co(i)).*H_cp(T_co(i)).*1e3)./conduc(T_co(i));
+    Re = 4.*mdot./(visc(T_co(i)).*pi.*D_coo);
+    Nu = 0.023.*Re.^0.8.*Pr.^0.4; % Pr^n with n= 0.4 because is being heated
+    hf(i) = Nu.*conduc(T_co(i))./D_coo ;
+    
+    
+    
+    Tw(i) = T_co(i) + Q.*(1./(2.*pi.*Rcoo_in.*hf(i)));
+    T_Por(i) = Tw(i) + 1./k_(Tw(i),'Be').*log(Rcoo_in./R_Por);
+    
+end
+
+
+%%
+figure (1)
+hold on; box on; grid on;
+plot (Tw,z)
+plot (T_Por,z,'.')
+plot (T_co,z)
+%legend ( 'Tw','T_Por','T_co')
+
+%%
+
+% downwards
+Tin2 = T_co(end);
+zspan2 = L:-0.01:0;
+
+[z2,T_co2] = ode45(@(z2,t_co2) -P_test./(L.*ele.*H_cp(t_co2).*1e3.*mdot), zspan2, Tin2);
+
+%%
+
+TOUT = 3000; 
+
+for i = 1: numel(T_co2)
+    cp_av(i) = (H_cp(TOUT)+H_cp(T_co2(i)))./2.*1e3;
+    m(i) = P_test./(ele.*cp_av(i).*(TOUT- T_co2(i))) ;
+    
+end
+
+mdot_fb = mean (m(:));
+
+xspan = [0 l];
+
+for i = 1: numel(T_co2)
+    [x,t] = ode45(@(x,t) P_test./(l.*ele.*H_cp(t).*1e3.*mdot_fb), xspan, T_co2(i));
+    T_co_fb(i,:) = t; 
+end
+
+
+%%
+T_film = zeros (numel(T_co2),45) ;
+
+for i = 1:numel(T_co2)
+    % i axial
+    for j = 1:numel(x)
+%j radial
+        prantl = (visc(T_co_fb(i,j)).*H_cp(T_co_fb(i,j)).*1e3)./conduc(T_co_fb(i,j));
+        Area = 2.*pi.*(r_out-x(j)).*hig; % cross sectional area
+        vel = mdot./(rho(T_co_fb(i,j)).*(Area)); % cross sectional vel
+        Re = rho(T_co_fb(i,j)).*vel.*Rp.*2./visc(T_co_fb(i,j));
+        Nu_l = 0.664.*prantl.^(1/3).*(Re./ep).^0.5;
+        Nu_t = 0.037.*(Re./ep).^0.8.*prantl./(1+2.443*(Re./ep).^(-0.1).*(prantl.^(2/3)-1)) ;
+        
+        Nu_sp = 1.9.*(2 + (Nu_l.^2 + Nu_t.^2).^0.5) ;
+        h_t = (Nu_sp.*conduc(T_co_fb(i,j))./dp);
+        T_film(i,j) = Power./(ele.*NN.*4*pi*R_try.^2.*h_t) + T_co_fb(i,j);
+    end
+end
+%%
+
+%%%%%%%%%%%
+% what affects the most conductive heat transfer 
+%%%%%%%%%%
+%at the end
+for j = 1:numel(x)
+    Tco (j,:) = (Power/(ele.*NN))./(4*pi.*k_NbC(T_film(end,j))).*(-1./Rp +1./r3) + T_film(end,j);
+    Tci(j,:) = (Power/(ele.*NN))./(4*pi.*k_G(Tco(end,j))) .*(-1./R2 +1./r2) + Tco(j,end);
+    Tf(j,:) = Power/(ele.*Vf.*NN).*(R_try.^2-r1.^2)./(6.*k_UC) + Tci(j,end);
+    
+    TTT(j,:) = [Tf(j,end:-1:1),Tci(j,end:-1:1),Tco(j,end:-1:1)];
+
+end
+

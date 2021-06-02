@@ -1,0 +1,48 @@
+% SERPENT_1
+Av = 6.02214076e23;
+% UC2
+dens_f = 13.63 ; %g/cm3
+dens_c1 = 2.26; 
+dens_c2 = 6.73;
+dens_mod = 1.85; 
+mm = 250.04 ; %g/mol
+enr = 97/100; 
+
+C12 = 12; 
+U238 = 238.05078826; % 7%
+U235 = 235.04393;    % 93%
+Zr91 = 91.224   ;
+Be = 9.012182;
+%O16 = 15.9994; 
+%m_U = 1./(.97/U238 + .03/U235) ; 
+
+m_U = (1-enr).*U238 + enr.*U235 ;
+m_C = C12;
+m_f_tot = m_U + m_C ;
+
+N_f_U238 = dens_f*1e3.*Av./(m_f_tot*1e-3).*(1-enr) .*1e-30;
+N_f_U235 = dens_f*1e3.*Av./(m_f_tot*1e-3).*(enr) .*1e-30;
+N_f_C12 = dens_f*1e3.*Av./(m_f_tot*1e-3).*1e-30;
+
+d_f_U238 = (1-enr).*U238./m_f_tot;
+d_f_U235 = (enr).*U235./m_f_tot;
+d_f_C12 = C12./m_f_tot;
+
+% clad grap
+N_c1_C12 = dens_c1*1e3.*Av./(m_C*1e-3).*1e-30;
+
+
+% clad ZrC
+m_Zr = Zr91;
+
+m_c2_tot = m_Zr + m_C ;
+
+N_c2_Zr = dens_c2*1e3.*Av./(m_c2_tot*1e-3).*1e-30;
+N_c2_C12 = dens_c2*1e3.*Av./(m_c2_tot*1e-3).*1e-30;
+
+d_c2_Zr = m_Zr./m_c2_tot;
+d_c2_C = m_C./m_c2_tot;
+
+% moderator 
+
+N_mod_Be = dens_mod*1e3.*Av./(Be*1e-3).*1e-30;
