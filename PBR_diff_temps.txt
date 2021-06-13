@@ -1,0 +1,349 @@
+set title "PBR2"
+
+% -- Fuel:
+
+% tmp 1000 
+mat fuel_1000   -13.63  tmp 1000.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 1250 
+mat fuel_1250   -13.63  tmp 1250.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 1500 
+mat fuel_1500   -13.63  tmp 1500.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 1750 
+mat fuel_1750   -13.63  tmp 1750.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 2000 
+mat fuel_2000   -13.63  tmp 2000.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 2250 
+mat fuel_2250   -13.63  tmp 2250.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 2500 
+mat fuel_2500   -13.63  tmp 2500.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 2750 
+mat fuel_2750   -13.63  tmp 2750.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 3000 
+mat fuel_3000   -13.63  tmp 3000.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% tmp 3250 
+mat fuel_3250   -13.63  tmp 3250.0 rgb 0 0 255        
+
+92238.09c    -0.0666
+92235.09c    -0.8849
+ 6012.09c    -0.0485
+
+% --- Graphite layer:
+
+mat graph  -2.26  rgb 255 0 0            
+
+ 6000.03c    -1.0
+
+
+% --- Zirconium carbide layer:
+
+mat ZrC     -6.73  rgb  0 255 0      
+
+40091.03c    -0.8837
+ 6012.03c    -0.1163
+
+% --- TaC HFrit:
+
+mat TaC     -14.3  rgb  23 127 19 %green      
+
+73181.03c    -0.9378
+ 6012.03c    -0.0622
+
+% --- Al CFrit:
+
+mat Al     -2.7  rgb  108 223 135 
+
+13027.03c    -1.0
+
+% --- Hydrogen:
+
+
+mat hydrogen_1 -0.0022 tmp 650.0 rgb 153 229 216
+
+1001.06c     -1.0
+
+mat hydrogen_2 -0.0015 tmp 950.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_3 -0.0011 tmp 1250.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_4 -0.0010 tmp 1520.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_5 -9.2538E-04 tmp 1790.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_6 -7.8648e-04 tmp 2050.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_7 -6.8653e-04 tmp 2300.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_8 -6.1085e-04 tmp 2560.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_9 -4.9447e-04 tmp 2850.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+mat hydrogen_10 -4.6976e-04 tmp 3000.0 rgb 153 229 216
+
+1001.09c     -1.0
+
+% --- Moderator Be:
+
+mat beryllium -1.85 rgb 239 229 137 %yellow
+
+4009.03c 	-1.0
+
+% --- Thermal scattering data:
+
+%therm grph gre7.00t
+
+% --- Definition of a coated fuel particle:
+
+particle 1 
+fuel_1000    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_1
+
+particle 2 
+fuel_1250    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_2
+
+particle 3 
+fuel_1500    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_3
+
+particle 4 
+fuel_1750    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_4
+
+particle 5 
+fuel_2000    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_5
+
+particle 6 
+fuel_2250    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_6
+
+particle 7 
+fuel_2500    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_7
+
+particle 8 
+fuel_2750    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_8
+
+particle 9 
+fuel_3000    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_9
+
+particle 10 
+fuel_3250    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen_10
+
+
+% --- Filler universe composed of hydrogen:
+surf 1 inf
+cell c1_h 21 hydrogen_1  -1
+cell c2_h 22 hydrogen_2  -1
+cell c3_h 23 hydrogen_3  -1
+cell c4_h 24 hydrogen_4  -1
+cell c5_h 25 hydrogen_5  -1
+cell c6_h 26 hydrogen_6  -1
+cell c7_h 27 hydrogen_7  -1
+cell c8_h 28 hydrogen_8  -1
+cell c9_h 29 hydrogen_9  -1
+cell c10_h 30 hydrogen_10  -1
+
+pbed 10 21 "part_05_1.inp"
+pbed 11 22 "part_05_2.inp"
+pbed 12 23 "part_05_3.inp"
+pbed 13 24 "part_05_4.inp"
+pbed 14 25 "part_05_5.inp"
+pbed 15 26 "part_05_6.inp"
+pbed 16 27 "part_05_7.inp"
+pbed 17 28 "part_05_8_2.inp"
+pbed 18 29 "part_05_9_2.inp"
+pbed 19 30 "part_05_10_2.inp"
+
+
+
+% --- Pebble: 
+surf sv  cyl  0.0 0.0 1.46 0 72.94
+surf shf cyl  0.0 0.0 1.76 0 72.94
+
+surf s19 cyl  0.0 0.0 1.814 0 72.94
+surf s18 cyl  0.0 0.0 1.9 0 72.94
+surf s17 cyl  0.0 0.0 1.971 0 72.94
+surf s16 cyl  0.0 0.0 2.042 0 72.94
+surf s15 cyl  0.0 0.0 2.112 0 72.94
+surf s14 cyl  0.0 0.0 2.184 0 72.94
+surf s13 cyl  0.0 0.0 2.255 0 72.94
+surf s12 cyl  0.0 0.0 2.326 0 72.94
+surf s11 cyl  0.0 0.0 2.397 0 72.94
+surf s10 cyl  0.0 0.0 2.48 0 72.94
+
+
+%surf s29 cyl  0.0 0.0 1.814 0 72.94
+%surf s28 cyl  0.0 0.0 1.9 0 72.94
+%surf s27 cyl  0.0 0.0 1.971 0 72.94
+%surf s26 cyl  0.0 0.0 2.042 0 72.94
+%surf s25 cyl  0.0 0.0 2.112 0 72.94
+%surf s24 cyl  0.0 0.0 2.184 0 72.94
+%surf s23 cyl  0.0 0.0 2.255 0 72.94
+%surf s22 cyl  0.0 0.0 2.326 0 72.94
+%surf s21 cyl  0.0 0.0 2.397 0 72.94
+%surf s20 cyl  0.0 0.0 2.48 0 72.94
+
+
+%surf s20 cyl  0.0 0.0 2.48 0 72.94
+
+
+surf scf cyl  0.0 0.0 2.68 0 72.94
+surf s30 hexxprism 0.0 0.0  5.21 0 72.94
+
+cell cv 0 void		-sv
+cell chf 0 TaC  		sv -shf
+
+cell c19 0 fill 		19  -s19 shf
+cell c18 0 fill 		18  -s18 s19
+cell c17 0 fill 		17  -s17 s18
+cell c16 0 fill 		16  -s16 s17
+cell c15 0 fill 		15  -s15 s16
+cell c14 0 fill 		14  -s14 s15
+cell c13 0 fill 		13  -s13 s14
+cell c12 0 fill 		12  -s12 s13
+cell c11 0 fill 		11  -s11 s12
+cell c10 0 fill 		10  -s10 s11
+
+cell c29 0 hydrogen_10 		  -s19 shf
+cell c28 0 hydrogen_9 		 -s18 s19
+cell c27 0 hydrogen_8 		 -s17 s18
+cell c26 0 hydrogen_7 		 -s16 s17
+cell c25 0 hydrogen_6 		 -s15 s16
+cell c24 0 hydrogen_5 		 -s14 s15
+cell c23 0 hydrogen_4 		 -s13 s14
+cell c22 0 hydrogen_3 		 -s12 s13
+cell c21 0 hydrogen_2 		 -s11 s12
+cell c20 0 hydrogen_1 		 -s10 s11
+
+%cell c20 0 hydrogen 	s10 -s20 
+
+cell ccf 0 Al            s20 -scf
+cell c30 0 beryllium	 scf -s30
+cell c40 0 outside 	s30
+
+
+
+
+
+% --- Neutron population and criticality cycles:
+ 
+set pop 1000 100 20
+
+% --- Boundary conditions: 
+set bc 1
+
+% --- Normalisation:
+set powdens 29.34
+
+% --- Geometry and mesh plots: 
+ 
+plot 3 500 500 5.0 -2 -1.76 -0.2 0.2
+plot 3 500 500 
+plot 2  500 500 
+plot 2 500 500 
+plot 1  500 500 
+
+mesh 3 500 500 
+mesh 2 500 500 
+
+
+% --- Cross section library file path: 
+set acelib "/usr/software/mcnplib/SERPENT/XSdata_endfb7/sss_endfb7u.xsdata"
+
+% --- Detectors --- %
+
+% *Example* detector for U235 fission rate
+
+% Define a fake material so that we only score on U235
+mat just235 1.0 92235.09c 1.0
+
+% Define detector for U235 fission rate
+det exampleDet dm fuel dr 18 just235
+
+
+

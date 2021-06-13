@@ -1,0 +1,132 @@
+set title "PBR2"
+
+% -- Fuel:
+
+mat fuel   -13.63  rgb 0 0 255        
+
+92238.03c    -0.0666
+92235.03c    -0.8849
+ 6012.03c    -0.0485
+
+
+% --- Graphite layer:
+
+mat graph  -2.26  rgb 255 0 0            
+
+ 6000.03c    -1.0
+
+
+% --- Zirconium carbide layer:
+
+mat ZrC     -6.73  rgb  0 255 0      
+
+40091.03c    -0.8837
+ 6012.03c    -0.1163
+
+% --- TaC HFrit:
+
+mat TaC     -14.3  rgb  23 127 19 %green      
+
+73181.03c    -0.9378
+ 6012.03c    -0.0622
+
+% --- Al CFrit:
+
+mat Al     -2.7  rgb  108 223 135 
+
+13027.03c    -1.0
+
+% --- Graphite matrix:
+
+%mat matrix  -1.75         moder grph 6000  
+
+% 6000.03c    8.77414E-02
+ %5010.03c    9.64977E-09
+ %5011.03c    3.90864E-08
+
+mat hydrogen -4.69 rgb 153 229 216
+
+1001.03c     -1.0
+
+mat beryllium -1.85 rgb 239 229 137 %yellow
+
+4009.03c 	-1.0
+
+% --- Thermal scattering data:
+
+%therm grph gre7.00t
+
+% --- Definition of a coated fuel particle:
+particle 1 
+fuel    2.2198E-02
+graph  2.35E-02
+ZrC     2.5E-02
+hydrogen
+
+
+
+% --- Filler universe composed of hydrogen:
+surf 1 inf
+%cell c1 2 hydrogen  -1
+cell c1 2 hydrogen  -1
+
+pbed 10 2 "part_05_72.inp"
+
+
+% --- Pebble: 
+surf sv  cyl  0.0 0.0 1.46 0 72.94
+surf shf cyl  0.0 0.0 1.76 0 72.94
+surf s10 cyl  0.0 0.0 2.48 0 72.94
+surf s20 cyl  0.0 0.0 2.48 0 72.94
+surf scf cyl  0.0 0.0 2.68 0 72.94
+surf s30 hexxprism 0.0 0.0  5.21 0 72.94
+
+cell cv 0 void		-sv
+cell chf 0 TaC  		sv -shf
+cell c10 0 fill 		10  -s10 shf
+cell c20 0 hydrogen 	s10 -s20 
+cell ccf 0 Al            s20 -scf
+cell c30 0 beryllium	 scf -s30
+cell c40 0 outside 	s30
+
+
+
+
+
+% --- Neutron population and criticality cycles:
+ 
+set pop 1000 100 20
+
+% --- Boundary conditions: 
+set bc 1
+
+% --- Normalisation:
+set powdens 29.34
+
+% --- Geometry and mesh plots: 
+ 
+plot 3 500 500 5.0 -2 -1.76 -0.2 0.2
+plot 3 500 500 
+plot 2  500 500 
+plot 2 500 500 
+plot 1  500 500 
+
+mesh 3 500 500 
+mesh 2 500 500 
+
+
+% --- Cross section library file path: 
+set acelib "/usr/software/mcnplib/SERPENT/XSdata_endfb7/sss_endfb7u.xsdata"
+
+% --- Detectors --- %
+
+% *Example* detector for U235 fission rate
+
+% Define a fake material so that we only score on U235
+mat just235 1.0 92235.09c 1.0
+
+% Define detector for U235 fission rate
+det exampleDet dm fuel dr 18 just235
+
+
+
